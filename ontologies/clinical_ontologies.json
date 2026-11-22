@@ -1,0 +1,386 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "domains": [
+      "neurology",
+      "neurorehabilitation",
+      "respiratory"
+    ],
+    "standards": [
+      "ICD-10",
+      "SNOMED-CT",
+      "LOINC"
+    ]
+  },
+  "diseases": [
+    {
+      "icd10_code": "I63.9",
+      "snomed_ct": "422504002",
+      "name": "Ischemic Stroke",
+      "clinical_domain": "neurology",
+      "expected_symptoms": [
+        "acute hemiparesis",
+        "facial droop",
+        "dysarthria",
+        "aphasia",
+        "visual field deficit",
+        "ataxia",
+        "dysphagia"
+      ],
+      "recommended_interventions": [
+        "non-contrast head CT",
+        "intravenous alteplase within 4.5h window",
+        "mechanical thrombectomy evaluation",
+        "antiplatelet therapy after hemorrhage exclusion",
+        "dysphagia screening prior to oral intake",
+        "early neurorehabilitation and physical therapy",
+        "permissive hypertension management"
+      ],
+      "contraindications": [
+        "thrombolysis if INR > 1.7",
+        "thrombolysis with active intracranial hemorrhage",
+        "oral intake prior to dysphagia screening",
+        "aggressive blood pressure reduction > 15% in first 24h without thrombolysis",
+        "hypotonic intravenous fluids"
+      ]
+    },
+    {
+      "icd10_code": "I61.9",
+      "snomed_ct": "274100004",
+      "name": "Intracerebral Hemorrhage",
+      "clinical_domain": "neurology",
+      "expected_symptoms": [
+        "sudden severe headache",
+        "progressive focal neurological deficit",
+        "decreased level of consciousness",
+        "nausea and vomiting",
+        "severe hypertension",
+        "seizures"
+      ],
+      "recommended_interventions": [
+        "urgent non-contrast head CT",
+        "intensive blood pressure control (target SBP < 140 mmHg)",
+        "rapid anticoagulation reversal",
+        "intracranial pressure monitoring",
+        "neurosurgical hematoma evacuation evaluation",
+        "subacute multidisciplinary neurorehabilitation"
+      ],
+      "contraindications": [
+        "intravenous thrombolysis (alteplase or tenecteplase)",
+        "therapeutic anticoagulation",
+        "antiplatelet administration in acute phase",
+        "lumbar puncture prior to neuroimaging",
+        "excessive neck flexion impairing cerebral venous drainage"
+      ]
+    },
+    {
+      "icd10_code": "S14.1",
+      "snomed_ct": "405759003",
+      "name": "Cervical Spinal Cord Injury",
+      "clinical_domain": "neurorehabilitation",
+      "expected_symptoms": [
+        "tetraplegia or tetraparesis",
+        "sensory level deficit",
+        "diaphragmatic weakness",
+        "neurogenic shock",
+        "bradycardia",
+        "hypotension",
+        "autonomic dysreflexia",
+        "neurogenic bladder"
+      ],
+      "recommended_interventions": [
+        "cervical spine immobilization",
+        "mean arterial pressure maintenance (85-90 mmHg)",
+        "serial forced vital capacity and respiratory mechanics monitoring",
+        "early surgical decompression evaluation",
+        "venous thromboembolism prophylaxis",
+        "multidisciplinary spinal cord neurorehabilitation",
+        "inspiratory muscle and diaphragmatic training"
+      ],
+      "contraindications": [
+        "unprotected cervical spine manipulation",
+        "succinylcholine administration beyond 48 hours post-injury",
+        "routine high-dose methylprednisolone outside evidence window",
+        "prolonged supine positioning without pressure injury prophylaxis",
+        "unmonitored bladder distension triggering autonomic dysreflexia"
+      ]
+    },
+    {
+      "icd10_code": "J44.1",
+      "snomed_ct": "195951007",
+      "name": "COPD Exacerbation",
+      "clinical_domain": "respiratory",
+      "expected_symptoms": [
+        "worsening dyspnea",
+        "increased sputum volume",
+        "increased sputum purulence",
+        "wheezing",
+        "hypercapnia",
+        "accessory respiratory muscle use",
+        "hypoxemia"
+      ],
+      "recommended_interventions": [
+        "controlled oxygen therapy (target SpO2 88-92%)",
+        "short-acting bronchodilators (albuterol and ipratropium)",
+        "systemic corticosteroids",
+        "non-invasive positive pressure ventilation (BiPAP) for hypercapnic acidosis",
+        "antibiotic therapy when bacterial infection suspected",
+        "pulmonary rehabilitation after acute stabilization"
+      ],
+      "contraindications": [
+        "uncontrolled high-flow oxygen targeting SpO2 > 96%",
+        "non-selective beta-blockers",
+        "respiratory depressants (opioids or sedatives) without airway protection",
+        "delayed non-invasive ventilation in acute hypercapnic acidosis (pH < 7.35)"
+      ]
+    },
+    {
+      "icd10_code": "G61.0",
+      "snomed_ct": "40956001",
+      "name": "Guillain-Barre Syndrome",
+      "clinical_domain": "neurology",
+      "expected_symptoms": [
+        "symmetric ascending flaccid weakness",
+        "areflexia or hyporeflexia",
+        "distal paresthesias",
+        "cranial nerve palsies",
+        "dysautonomia",
+        "progressive respiratory muscle weakness",
+        "bulbar dysfunction"
+      ],
+      "recommended_interventions": [
+        "intravenous immunoglobulin (IVIG)",
+        "therapeutic plasma exchange (plasmapheresis)",
+        "serial forced vital capacity and negative inspiratory force monitoring",
+        "elective endotracheal intubation if FVC < 20 mL/kg",
+        "venous thromboembolism prophylaxis",
+        "progressive neurorehabilitation and gait retraining"
+      ],
+      "contraindications": [
+        "oral or intravenous corticosteroids as monotherapy",
+        "succinylcholine during intubation due to hyperkalemia risk",
+        "premature discharge prior to respiratory plateau verification",
+        "high-intensity fatiguing resistance exercise in acute demyelinating phase"
+      ]
+    },
+    {
+      "icd10_code": "J18.9",
+      "snomed_ct": "385093006",
+      "name": "Community-Acquired Pneumonia",
+      "clinical_domain": "respiratory",
+      "expected_symptoms": [
+        "productive cough",
+        "fever or hypothermia",
+        "dyspnea",
+        "pleuritic chest pain",
+        "tachypnea",
+        "hypoxemia",
+        "focal crackles or bronchial breath sounds"
+      ],
+      "recommended_interventions": [
+        "empiric guideline-directed antibiotic therapy",
+        "supplemental oxygen therapy (target SpO2 >= 92%)",
+        "chest radiography",
+        "blood and sputum cultures in severe presentations",
+        "intravenous fluid resuscitation as indicated",
+        "airway clearance and respiratory physiotherapy"
+      ],
+      "contraindications": [
+        "delayed antibiotic administration in septic patients",
+        "routine systemic corticosteroids in non-severe pneumonia without indication",
+        "aggressive chest percussion with severe hemoptysis or coagulopathy",
+        "antitussive cough suppressants impairing mucociliary clearance"
+      ]
+    },
+    {
+      "icd10_code": "G70.0",
+      "snomed_ct": "91637004",
+      "name": "Myasthenia Gravis",
+      "clinical_domain": "neurology",
+      "expected_symptoms": [
+        "fluctuating fatigable muscle weakness",
+        "ptosis",
+        "diplopia",
+        "dysarthria",
+        "dysphagia",
+        "neck flexor weakness",
+        "neuromuscular respiratory failure"
+      ],
+      "recommended_interventions": [
+        "intravenous immunoglobulin (IVIG) or plasmapheresis in myasthenic crisis",
+        "serial forced vital capacity and negative inspiratory force monitoring",
+        "early airway protection for impending neuromuscular respiratory failure",
+        "pyridostigmine therapy (withheld during mechanical ventilation crisis)",
+        "immunosuppressive therapy optimization",
+        "energy-conservation neurorehabilitation"
+      ],
+      "contraindications": [
+        "aminoglycoside antibiotics",
+        "fluoroquinolone antibiotics",
+        "magnesium sulfate infusion",
+        "beta-blockers",
+        "high-dose corticosteroid initiation without inpatient respiratory monitoring",
+        "standard-dose non-depolarizing neuromuscular blocking agents"
+      ]
+    },
+    {
+      "icd10_code": "J80",
+      "snomed_ct": "67782005",
+      "name": "Acute Respiratory Distress Syndrome",
+      "clinical_domain": "respiratory",
+      "expected_symptoms": [
+        "severe refractory hypoxemia",
+        "bilateral pulmonary infiltrates",
+        "tachypnea",
+        "severe dyspnea",
+        "reduced lung compliance",
+        "diffuse bilateral crackles"
+      ],
+      "recommended_interventions": [
+        "lung-protective mechanical ventilation (tidal volume 4-6 mL/kg PBW)",
+        "PEEP titration maintaining plateau pressure <= 30 cmH2O",
+        "prone positioning for severe ARDS (PaO2/FiO2 < 150)",
+        "conservative fluid management after shock resolution",
+        "early ICU mobilization and post-ICU cardiopulmonary neurorehabilitation"
+      ],
+      "contraindications": [
+        "high tidal volume ventilation (> 8 mL/kg PBW)",
+        "excessive positive fluid balance without hemodynamic indication",
+        "routine high-frequency oscillatory ventilation",
+        "prolonged deep sedation preventing spontaneous awakening trials when stable"
+      ]
+    }
+  ],
+  "loinc_labs": [
+    {
+      "loinc_code": "59408-5",
+      "name": "Oxygen saturation in Arterial blood by Pulse oximetry",
+      "short_name": "SpO2",
+      "unit": "%",
+      "reference_range": {
+        "min": 95.0,
+        "max": 100.0
+      },
+      "critical_low": 88.0,
+      "critical_high": null,
+      "clinical_significance": "Monitors arterial oxygenation; target 88-92% in hypercapnic COPD exacerbations."
+    },
+    {
+      "loinc_code": "2744-1",
+      "name": "pH of Arterial blood",
+      "short_name": "Arterial pH",
+      "unit": "pH",
+      "reference_range": {
+        "min": 7.35,
+        "max": 7.45
+      },
+      "critical_low": 7.2,
+      "critical_high": 7.6,
+      "clinical_significance": "Detects acute respiratory acidosis (< 7.35) requiring NIV or intubation."
+    },
+    {
+      "loinc_code": "2019-8",
+      "name": "Carbon dioxide [Partial pressure] in Arterial blood",
+      "short_name": "PaCO2",
+      "unit": "mmHg",
+      "reference_range": {
+        "min": 35.0,
+        "max": 45.0
+      },
+      "critical_low": 20.0,
+      "critical_high": 65.0,
+      "clinical_significance": "Quantifies alveolar ventilation; elevated in COPD exacerbation and neuromuscular respiratory failure."
+    },
+    {
+      "loinc_code": "6301-6",
+      "name": "INR in Platelet poor plasma by Coagulation assay",
+      "short_name": "INR",
+      "unit": "{INR}",
+      "reference_range": {
+        "min": 0.8,
+        "max": 1.2
+      },
+      "critical_low": null,
+      "critical_high": 4.0,
+      "clinical_significance": "Assesses coagulation status; INR > 1.7 contraindicates IV thrombolysis in acute ischemic stroke."
+    },
+    {
+      "loinc_code": "2823-3",
+      "name": "Potassium [Moles/volume] in Serum or Plasma",
+      "short_name": "Serum Potassium",
+      "unit": "mmol/L",
+      "reference_range": {
+        "min": 3.5,
+        "max": 5.0
+      },
+      "critical_low": 2.8,
+      "critical_high": 6.0,
+      "clinical_significance": "Critical arrhythmia marker; hyperkalemia risk amplified by succinylcholine in SCI and Guillain-Barre syndrome."
+    },
+    {
+      "loinc_code": "2703-7",
+      "name": "Oxygen [Partial pressure] in Arterial blood",
+      "short_name": "PaO2",
+      "unit": "mmHg",
+      "reference_range": {
+        "min": 80.0,
+        "max": 100.0
+      },
+      "critical_low": 55.0,
+      "critical_high": null,
+      "clinical_significance": "Measures arterial oxygen tension; used with FiO2 to grade ARDS severity."
+    },
+    {
+      "loinc_code": "1960-4",
+      "name": "Bicarbonate [Moles/volume] in Arterial blood",
+      "short_name": "Arterial HCO3",
+      "unit": "mmol/L",
+      "reference_range": {
+        "min": 22.0,
+        "max": 26.0
+      },
+      "critical_low": 12.0,
+      "critical_high": 40.0,
+      "clinical_significance": "Distinguishes acute versus chronic renal compensation in hypercapnic respiratory failure."
+    },
+    {
+      "loinc_code": "2518-9",
+      "name": "Lactate [Moles/volume] in Arterial blood",
+      "short_name": "Arterial Lactate",
+      "unit": "mmol/L",
+      "reference_range": {
+        "min": 0.5,
+        "max": 2.0
+      },
+      "critical_low": null,
+      "critical_high": 4.0,
+      "clinical_significance": "Evaluates tissue hypoperfusion in severe community-acquired pneumonia, sepsis, and neurogenic shock."
+    },
+    {
+      "loinc_code": "2345-7",
+      "name": "Glucose [Mass/volume] in Serum or Plasma",
+      "short_name": "Serum Glucose",
+      "unit": "mg/dL",
+      "reference_range": {
+        "min": 70.0,
+        "max": 100.0
+      },
+      "critical_low": 50.0,
+      "critical_high": 400.0,
+      "clinical_significance": "Rules out hypoglycemia as a stroke mimic prior to thrombolytic therapy."
+    },
+    {
+      "loinc_code": "777-3",
+      "name": "Platelets [#/volume] in Blood by Automated count",
+      "short_name": "Platelet Count",
+      "unit": "10*3/uL",
+      "reference_range": {
+        "min": 150.0,
+        "max": 400.0
+      },
+      "critical_low": 50.0,
+      "critical_high": 1000.0,
+      "clinical_significance": "Evaluates bleeding risk; platelet count < 100 x 10^3/uL contraindicates IV thrombolysis."
+    }
+  ]
+}
