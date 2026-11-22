@@ -1,0 +1,398 @@
+{
+  "summary": {
+    "total_cases": 6,
+    "graph_nodes": 153,
+    "graph_edges": 141,
+    "total_phi_redacted": 49,
+    "phi_by_category": {
+      "name": 14,
+      "date": 11,
+      "national_id": 6,
+      "phone": 6,
+      "email": 6,
+      "mrn": 6
+    },
+    "all_notes_hipaa_compliant": true,
+    "validated_count": 2,
+    "contraindicated_count": 2,
+    "unverified_count": 2,
+    "unknown_condition_count": 0,
+    "average_symptom_overlap_pct": 62.3
+  },
+  "cases": [
+    {
+      "case_id": "KG_CASE_001",
+      "icd10_code": "I61.9",
+      "disease_name": "Intracerebral Hemorrhage",
+      "deidentification": {
+        "original_length": 403,
+        "redacted_text": "Patient: [NAME] ([MRN], DOB: [DATE], RUT: [ID_REDACTED]) arrived in the emergency department on [DATE] with sudden severe headache, vomiting, and progressive right hemiparesis. BP 198/112 mmHg, INR 1.3 (LOINC 6301-6). Non-contrast head CT confirmed left basal ganglia intracerebral hemorrhage. Attending Dr. [NAME] can be reached at [PHONE] or [EMAIL].",
+        "entities_redacted": {
+          "name": 2,
+          "date": 2,
+          "national_id": 1,
+          "phone": 1,
+          "email": 1,
+          "mrn": 1
+        },
+        "is_hipaa_compliant": true
+      },
+      "recommendation_validation": {
+        "icd10_code": "I61.9",
+        "disease_name": "Intracerebral Hemorrhage",
+        "proposed_intervention": "intravenous thrombolysis (alteplase or tenecteplase)",
+        "status": "CRITICAL_CONTRAINDICATION",
+        "is_safe": false,
+        "matched_rule": "intravenous thrombolysis (alteplase or tenecteplase)",
+        "reason": "Proposed intervention matches contraindication 'intravenous thrombolysis (alteplase or tenecteplase)' for Intracerebral Hemorrhage (I61.9).",
+        "requires_clinician_review": true
+      },
+      "symptom_validation": {
+        "icd10_code": "I61.9",
+        "disease_name": "Intracerebral Hemorrhage",
+        "condition_found": true,
+        "observed_symptoms": [
+          "sudden severe headache",
+          "progressive focal neurological deficit",
+          "nausea and vomiting",
+          "severe hypertension"
+        ],
+        "expected_symptoms": [
+          "sudden severe headache",
+          "progressive focal neurological deficit",
+          "decreased level of consciousness",
+          "nausea and vomiting",
+          "severe hypertension",
+          "seizures"
+        ],
+        "matched_symptoms": [
+          "sudden severe headache",
+          "progressive focal neurological deficit",
+          "nausea and vomiting",
+          "severe hypertension"
+        ],
+        "unmatched_observed_symptoms": [],
+        "missing_expected_symptoms": [
+          "decreased level of consciousness",
+          "seizures"
+        ],
+        "overlap_score": 66.67,
+        "observed_match_pct": 100.0
+      }
+    },
+    {
+      "case_id": "KG_CASE_002",
+      "icd10_code": "I63.9",
+      "disease_name": "Ischemic Stroke",
+      "deidentification": {
+        "original_length": 366,
+        "redacted_text": "Patient: [NAME], [MRN], SSN: [ID_REDACTED], born [DATE], was evaluated on [DATE] by Dr. [NAME] within 2.5 hours of symptom onset. Mr. [NAME] presented with acute hemiparesis, facial droop, dysarthria, and dysphagia. Serum glucose 112 mg/dL, INR 1.0, BP 162/88 mmHg. Emergency contact: [PHONE], [EMAIL].",
+        "entities_redacted": {
+          "name": 3,
+          "date": 2,
+          "national_id": 1,
+          "phone": 1,
+          "email": 1,
+          "mrn": 1
+        },
+        "is_hipaa_compliant": true
+      },
+      "recommendation_validation": {
+        "icd10_code": "I63.9",
+        "disease_name": "Ischemic Stroke",
+        "proposed_intervention": "intravenous alteplase within 4.5h window",
+        "status": "VALIDATED",
+        "is_safe": true,
+        "matched_rule": "intravenous alteplase within 4.5h window",
+        "reason": "Proposed intervention matches recommended treatment 'intravenous alteplase within 4.5h window' for Ischemic Stroke (I63.9).",
+        "requires_clinician_review": false
+      },
+      "symptom_validation": {
+        "icd10_code": "I63.9",
+        "disease_name": "Ischemic Stroke",
+        "condition_found": true,
+        "observed_symptoms": [
+          "acute hemiparesis",
+          "facial droop",
+          "dysarthria",
+          "dysphagia"
+        ],
+        "expected_symptoms": [
+          "acute hemiparesis",
+          "facial droop",
+          "dysarthria",
+          "aphasia",
+          "visual field deficit",
+          "ataxia",
+          "dysphagia"
+        ],
+        "matched_symptoms": [
+          "acute hemiparesis",
+          "facial droop",
+          "dysarthria",
+          "dysphagia"
+        ],
+        "unmatched_observed_symptoms": [],
+        "missing_expected_symptoms": [
+          "aphasia",
+          "visual field deficit",
+          "ataxia"
+        ],
+        "overlap_score": 57.14,
+        "observed_match_pct": 100.0
+      }
+    },
+    {
+      "case_id": "KG_CASE_003",
+      "icd10_code": "J44.1",
+      "disease_name": "COPD Exacerbation",
+      "deidentification": {
+        "original_length": 374,
+        "redacted_text": "Patient: [NAME] (RUT: [ID_REDACTED], [MRN]) was admitted on [DATE] with worsening dyspnea, wheezing, and increased sputum purulence. Arterial blood gas showed pH 7.31 (LOINC 2744-1), PaCO2 62 mmHg (LOINC 2019-8), and SpO2 86% (LOINC 59408-5). Family callback: [PHONE], email [EMAIL]. Managed by Dr. [NAME].",
+        "entities_redacted": {
+          "name": 2,
+          "date": 1,
+          "national_id": 1,
+          "phone": 1,
+          "email": 1,
+          "mrn": 1
+        },
+        "is_hipaa_compliant": true
+      },
+      "recommendation_validation": {
+        "icd10_code": "J44.1",
+        "disease_name": "COPD Exacerbation",
+        "proposed_intervention": "uncontrolled high-flow oxygen targeting SpO2 > 96%",
+        "status": "CRITICAL_CONTRAINDICATION",
+        "is_safe": false,
+        "matched_rule": "uncontrolled high-flow oxygen targeting SpO2 > 96%",
+        "reason": "Proposed intervention matches contraindication 'uncontrolled high-flow oxygen targeting SpO2 > 96%' for COPD Exacerbation (J44.1).",
+        "requires_clinician_review": true
+      },
+      "symptom_validation": {
+        "icd10_code": "J44.1",
+        "disease_name": "COPD Exacerbation",
+        "condition_found": true,
+        "observed_symptoms": [
+          "worsening dyspnea",
+          "increased sputum purulence",
+          "wheezing",
+          "hypercapnia",
+          "hypoxemia"
+        ],
+        "expected_symptoms": [
+          "worsening dyspnea",
+          "increased sputum volume",
+          "increased sputum purulence",
+          "wheezing",
+          "hypercapnia",
+          "accessory respiratory muscle use",
+          "hypoxemia"
+        ],
+        "matched_symptoms": [
+          "worsening dyspnea",
+          "increased sputum purulence",
+          "wheezing",
+          "hypercapnia",
+          "hypoxemia"
+        ],
+        "unmatched_observed_symptoms": [],
+        "missing_expected_symptoms": [
+          "increased sputum volume",
+          "accessory respiratory muscle use"
+        ],
+        "overlap_score": 71.43,
+        "observed_match_pct": 100.0
+      }
+    },
+    {
+      "case_id": "KG_CASE_004",
+      "icd10_code": "G61.0",
+      "disease_name": "Guillain-Barre Syndrome",
+      "deidentification": {
+        "original_length": 404,
+        "redacted_text": "Patient: [NAME], DOB: [DATE], [MRN], SSN: [ID_REDACTED], presented on [DATE] two weeks after gastrointestinal illness with symmetric ascending flaccid weakness, areflexia, and distal paresthesias. Serial FVC declined to 24 mL/kg; serum potassium 4.2 mmol/L (LOINC 2823-3). Ms. [NAME] lists contact phone [PHONE] and [EMAIL]. Reviewed by Dr. [NAME].",
+        "entities_redacted": {
+          "name": 3,
+          "date": 2,
+          "national_id": 1,
+          "phone": 1,
+          "email": 1,
+          "mrn": 1
+        },
+        "is_hipaa_compliant": true
+      },
+      "recommendation_validation": {
+        "icd10_code": "G61.0",
+        "disease_name": "Guillain-Barre Syndrome",
+        "proposed_intervention": "intravenous immunoglobulin (IVIG)",
+        "status": "VALIDATED",
+        "is_safe": true,
+        "matched_rule": "intravenous immunoglobulin (IVIG)",
+        "reason": "Proposed intervention matches recommended treatment 'intravenous immunoglobulin (IVIG)' for Guillain-Barre Syndrome (G61.0).",
+        "requires_clinician_review": false
+      },
+      "symptom_validation": {
+        "icd10_code": "G61.0",
+        "disease_name": "Guillain-Barre Syndrome",
+        "condition_found": true,
+        "observed_symptoms": [
+          "symmetric ascending flaccid weakness",
+          "areflexia",
+          "distal paresthesias",
+          "progressive respiratory muscle weakness"
+        ],
+        "expected_symptoms": [
+          "symmetric ascending flaccid weakness",
+          "areflexia or hyporeflexia",
+          "distal paresthesias",
+          "cranial nerve palsies",
+          "dysautonomia",
+          "progressive respiratory muscle weakness",
+          "bulbar dysfunction"
+        ],
+        "matched_symptoms": [
+          "symmetric ascending flaccid weakness",
+          "areflexia or hyporeflexia",
+          "distal paresthesias",
+          "progressive respiratory muscle weakness"
+        ],
+        "unmatched_observed_symptoms": [],
+        "missing_expected_symptoms": [
+          "cranial nerve palsies",
+          "dysautonomia",
+          "bulbar dysfunction"
+        ],
+        "overlap_score": 57.14,
+        "observed_match_pct": 100.0
+      }
+    },
+    {
+      "case_id": "KG_CASE_005",
+      "icd10_code": "S14.1",
+      "disease_name": "Cervical Spinal Cord Injury",
+      "deidentification": {
+        "original_length": 354,
+        "redacted_text": "Patient: [NAME] (RUN: [ID_REDACTED], [MRN]) sustained a C5 diving trauma on [DATE] and was transferred to neurorehabilitation on [DATE]. Exam reveals tetraparesis, sensory level deficit at C5, diaphragmatic weakness, and neurogenic bladder. Contact: [PHONE], [EMAIL]. Consulted by Dr. [NAME].",
+        "entities_redacted": {
+          "name": 2,
+          "date": 2,
+          "national_id": 1,
+          "phone": 1,
+          "email": 1,
+          "mrn": 1
+        },
+        "is_hipaa_compliant": true
+      },
+      "recommendation_validation": {
+        "icd10_code": "S14.1",
+        "disease_name": "Cervical Spinal Cord Injury",
+        "proposed_intervention": "experimental hyperbaric oxygen chamber protocol",
+        "status": "UNVERIFIED_INTERVENTION",
+        "is_safe": false,
+        "matched_rule": null,
+        "reason": "Intervention 'experimental hyperbaric oxygen chamber protocol' is not established in the KG for Cervical Spinal Cord Injury (S14.1); flagged for human clinician review.",
+        "requires_clinician_review": true
+      },
+      "symptom_validation": {
+        "icd10_code": "S14.1",
+        "disease_name": "Cervical Spinal Cord Injury",
+        "condition_found": true,
+        "observed_symptoms": [
+          "tetraparesis",
+          "sensory level deficit",
+          "diaphragmatic weakness",
+          "neurogenic bladder"
+        ],
+        "expected_symptoms": [
+          "tetraplegia or tetraparesis",
+          "sensory level deficit",
+          "diaphragmatic weakness",
+          "neurogenic shock",
+          "bradycardia",
+          "hypotension",
+          "autonomic dysreflexia",
+          "neurogenic bladder"
+        ],
+        "matched_symptoms": [
+          "tetraplegia or tetraparesis",
+          "sensory level deficit",
+          "diaphragmatic weakness",
+          "neurogenic bladder"
+        ],
+        "unmatched_observed_symptoms": [],
+        "missing_expected_symptoms": [
+          "neurogenic shock",
+          "bradycardia",
+          "hypotension",
+          "autonomic dysreflexia"
+        ],
+        "overlap_score": 50.0,
+        "observed_match_pct": 100.0
+      }
+    },
+    {
+      "case_id": "KG_CASE_006",
+      "icd10_code": "J18.9",
+      "disease_name": "Community-Acquired Pneumonia",
+      "deidentification": {
+        "original_length": 324,
+        "redacted_text": "Patient: [NAME], DOB: [DATE], [MRN], SSN: [ID_REDACTED], presented on [DATE] with productive cough, fever, dyspnea, pleuritic chest pain, and right lower lobe crackles. SpO2 90% on room air, arterial lactate 1.8 mmol/L. Phone: [PHONE], email [EMAIL]. Evaluated by Dr. [NAME].",
+        "entities_redacted": {
+          "name": 2,
+          "date": 2,
+          "national_id": 1,
+          "phone": 1,
+          "email": 1,
+          "mrn": 1
+        },
+        "is_hipaa_compliant": true
+      },
+      "recommendation_validation": {
+        "icd10_code": "J18.9",
+        "disease_name": "Community-Acquired Pneumonia",
+        "proposed_intervention": "high-dose intravenous vitamin C infusion",
+        "status": "UNVERIFIED_INTERVENTION",
+        "is_safe": false,
+        "matched_rule": null,
+        "reason": "Intervention 'high-dose intravenous vitamin C infusion' is not established in the KG for Community-Acquired Pneumonia (J18.9); flagged for human clinician review.",
+        "requires_clinician_review": true
+      },
+      "symptom_validation": {
+        "icd10_code": "J18.9",
+        "disease_name": "Community-Acquired Pneumonia",
+        "condition_found": true,
+        "observed_symptoms": [
+          "productive cough",
+          "fever",
+          "dyspnea",
+          "pleuritic chest pain",
+          "hypoxemia"
+        ],
+        "expected_symptoms": [
+          "productive cough",
+          "fever or hypothermia",
+          "dyspnea",
+          "pleuritic chest pain",
+          "tachypnea",
+          "hypoxemia",
+          "focal crackles or bronchial breath sounds"
+        ],
+        "matched_symptoms": [
+          "productive cough",
+          "fever or hypothermia",
+          "dyspnea",
+          "pleuritic chest pain",
+          "hypoxemia"
+        ],
+        "unmatched_observed_symptoms": [],
+        "missing_expected_symptoms": [
+          "tachypnea",
+          "focal crackles or bronchial breath sounds"
+        ],
+        "overlap_score": 71.43,
+        "observed_match_pct": 100.0
+      }
+    }
+  ]
+}

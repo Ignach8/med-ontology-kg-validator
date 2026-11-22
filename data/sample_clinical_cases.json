@@ -1,0 +1,76 @@
+[
+  {
+    "case_id": "KG_CASE_001",
+    "raw_clinical_note": "Patient: Elena Morales (MRN: 84219034, DOB: 1957-06-18, RUT: 10.482.913-K) arrived in the emergency department on 03/14/2026 with sudden severe headache, vomiting, and progressive right hemiparesis. BP 198/112 mmHg, INR 1.3 (LOINC 6301-6). Non-contrast head CT confirmed left basal ganglia intracerebral hemorrhage. Attending Dr. Marcus Vance can be reached at (555) 234-8910 or m.vance@neuroclinic.org.",
+    "icd10_code": "I61.9",
+    "observed_symptoms": [
+      "sudden severe headache",
+      "progressive focal neurological deficit",
+      "nausea and vomiting",
+      "severe hypertension"
+    ],
+    "ai_proposed_intervention": "intravenous thrombolysis (alteplase or tenecteplase)"
+  },
+  {
+    "case_id": "KG_CASE_002",
+    "raw_clinical_note": "Patient: Arthur Pendelton, MRN# 5509124, SSN: 123-45-6789, born 04/22/1952, was evaluated on March 18, 2026 by Dr. Hannah Lin within 2.5 hours of symptom onset. Mr. Arthur Pendelton presented with acute hemiparesis, facial droop, dysarthria, and dysphagia. Serum glucose 112 mg/dL, INR 1.0, BP 162/88 mmHg. Emergency contact: +1-555-876-4321, apendelton@example.com.",
+    "icd10_code": "I63.9",
+    "observed_symptoms": [
+      "acute hemiparesis",
+      "facial droop",
+      "dysarthria",
+      "dysphagia"
+    ],
+    "ai_proposed_intervention": "intravenous alteplase within 4.5h window"
+  },
+  {
+    "case_id": "KG_CASE_003",
+    "raw_clinical_note": "Patient: Roberto Fuentes (RUT: 11.739.204-5, Medical Record Number: CL-904812) was admitted on 21/02/2026 with worsening dyspnea, wheezing, and increased sputum purulence. Arterial blood gas showed pH 7.31 (LOINC 2744-1), PaCO2 62 mmHg (LOINC 2019-8), and SpO2 86% (LOINC 59408-5). Family callback: +56 9 7123 4567, email rfuentes.family@mail.cl. Managed by Dr. Sofia Rojas.",
+    "icd10_code": "J44.1",
+    "observed_symptoms": [
+      "worsening dyspnea",
+      "increased sputum purulence",
+      "wheezing",
+      "hypercapnia",
+      "hypoxemia"
+    ],
+    "ai_proposed_intervention": "uncontrolled high-flow oxygen targeting SpO2 > 96%"
+  },
+  {
+    "case_id": "KG_CASE_004",
+    "raw_clinical_note": "Patient: Clara Bennett, DOB: 1984-09-03, MRN: 77104529, SSN: 987-65-4321, presented on 11/05/2026 two weeks after gastrointestinal illness with symmetric ascending flaccid weakness, areflexia, and distal paresthesias. Serial FVC declined to 24 mL/kg; serum potassium 4.2 mmol/L (LOINC 2823-3). Ms. Clara Bennett lists contact phone 555-390-2211 and clara.bennett@example.org. Reviewed by Dr. David Patel.",
+    "icd10_code": "G61.0",
+    "observed_symptoms": [
+      "symmetric ascending flaccid weakness",
+      "areflexia",
+      "distal paresthesias",
+      "progressive respiratory muscle weakness"
+    ],
+    "ai_proposed_intervention": "intravenous immunoglobulin (IVIG)"
+  },
+  {
+    "case_id": "KG_CASE_005",
+    "raw_clinical_note": "Patient: Diego Valenzuela (RUN: 16.504.882-9, MRN: 3091847) sustained a C5 diving trauma on 15/01/2026 and was transferred to neurorehabilitation on February 2, 2026. Exam reveals tetraparesis, sensory level deficit at C5, diaphragmatic weakness, and neurogenic bladder. Contact: +56 2 2489 1102, dvalenzuela@rehabmail.cl. Consulted by Dr. Patricia Vega.",
+    "icd10_code": "S14.1",
+    "observed_symptoms": [
+      "tetraparesis",
+      "sensory level deficit",
+      "diaphragmatic weakness",
+      "neurogenic bladder"
+    ],
+    "ai_proposed_intervention": "experimental hyperbaric oxygen chamber protocol"
+  },
+  {
+    "case_id": "KG_CASE_006",
+    "raw_clinical_note": "Patient: Margaret Holloway, DOB: 1949-11-30, MRN: 6129048, SSN: 456-78-9012, presented on 04/09/2026 with productive cough, fever, dyspnea, pleuritic chest pain, and right lower lobe crackles. SpO2 90% on room air, arterial lactate 1.8 mmol/L. Phone: (555) 612-9048, email mholloway@example.net. Evaluated by Dr. Samuel Cho.",
+    "icd10_code": "J18.9",
+    "observed_symptoms": [
+      "productive cough",
+      "fever",
+      "dyspnea",
+      "pleuritic chest pain",
+      "hypoxemia"
+    ],
+    "ai_proposed_intervention": "high-dose intravenous vitamin C infusion"
+  }
+]

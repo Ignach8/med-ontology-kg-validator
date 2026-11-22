@@ -1,0 +1,452 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 800px;
+                 background-color: #f8fafc;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 800px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"font": {"color": "#0f172a"}, "group": "disease", "id": "I63.9", "label": "Ischemic Stroke", "shape": "dot", "size": 28, "title": "Type: disease\nName: Ischemic Stroke\nICD-10: I63.9\nSNOMED CT: 422504002"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:acute hemiparesis", "label": "acute hemiparesis", "shape": "dot", "size": 16, "title": "Type: symptom\nName: acute hemiparesis"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:facial droop", "label": "facial droop", "shape": "dot", "size": 16, "title": "Type: symptom\nName: facial droop"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:dysarthria", "label": "dysarthria", "shape": "dot", "size": 16, "title": "Type: symptom\nName: dysarthria"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:aphasia", "label": "aphasia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: aphasia"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:visual field deficit", "label": "visual field deficit", "shape": "dot", "size": 16, "title": "Type: symptom\nName: visual field deficit"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:ataxia", "label": "ataxia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: ataxia"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:dysphagia", "label": "dysphagia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: dysphagia"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:non-contrast head ct", "label": "non-contrast head CT", "shape": "dot", "size": 18, "title": "Type: intervention\nName: non-contrast head CT"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:intravenous alteplase within 4.5h window", "label": "intravenous alteplase within 4.5h window", "shape": "dot", "size": 18, "title": "Type: intervention\nName: intravenous alteplase within 4.5h window"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:mechanical thrombectomy evaluation", "label": "mechanical thrombectomy evaluation", "shape": "dot", "size": 18, "title": "Type: intervention\nName: mechanical thrombectomy evaluation"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:antiplatelet therapy after hemorrhage exclusion", "label": "antiplatelet therapy after hemorrhage exclusion", "shape": "dot", "size": 18, "title": "Type: intervention\nName: antiplatelet therapy after hemorrhage exclusion"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:dysphagia screening prior to oral intake", "label": "dysphagia screening prior to oral intake", "shape": "dot", "size": 18, "title": "Type: intervention\nName: dysphagia screening prior to oral intake"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:early neurorehabilitation and physical therapy", "label": "early neurorehabilitation and physical therapy", "shape": "dot", "size": 18, "title": "Type: intervention\nName: early neurorehabilitation and physical therapy"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:permissive hypertension management", "label": "permissive hypertension management", "shape": "dot", "size": 18, "title": "Type: intervention\nName: permissive hypertension management"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:thrombolysis if inr \u003e 1.7", "label": "thrombolysis if INR \u003e 1.7", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: thrombolysis if INR \u003e 1.7"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:thrombolysis with active intracranial hemorrhage", "label": "thrombolysis with active intracranial hemorrhage", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: thrombolysis with active intracranial hemorrhage"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:oral intake prior to dysphagia screening", "label": "oral intake prior to dysphagia screening", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: oral intake prior to dysphagia screening"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:aggressive blood pressure reduction \u003e 15% in first 24h without thrombolysis", "label": "aggressive blood pressure reduction \u003e 15% in first 24h without thrombolysis", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: aggressive blood pressure reduction \u003e 15% in first 24h without thrombolysis"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:hypotonic intravenous fluids", "label": "hypotonic intravenous fluids", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: hypotonic intravenous fluids"}, {"font": {"color": "#0f172a"}, "group": "disease", "id": "I61.9", "label": "Intracerebral Hemorrhage", "shape": "dot", "size": 28, "title": "Type: disease\nName: Intracerebral Hemorrhage\nICD-10: I61.9\nSNOMED CT: 274100004"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:sudden severe headache", "label": "sudden severe headache", "shape": "dot", "size": 16, "title": "Type: symptom\nName: sudden severe headache"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:progressive focal neurological deficit", "label": "progressive focal neurological deficit", "shape": "dot", "size": 16, "title": "Type: symptom\nName: progressive focal neurological deficit"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:decreased level of consciousness", "label": "decreased level of consciousness", "shape": "dot", "size": 16, "title": "Type: symptom\nName: decreased level of consciousness"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:nausea and vomiting", "label": "nausea and vomiting", "shape": "dot", "size": 16, "title": "Type: symptom\nName: nausea and vomiting"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:severe hypertension", "label": "severe hypertension", "shape": "dot", "size": 16, "title": "Type: symptom\nName: severe hypertension"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:seizures", "label": "seizures", "shape": "dot", "size": 16, "title": "Type: symptom\nName: seizures"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:urgent non-contrast head ct", "label": "urgent non-contrast head CT", "shape": "dot", "size": 18, "title": "Type: intervention\nName: urgent non-contrast head CT"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:intensive blood pressure control (target sbp \u003c 140 mmhg)", "label": "intensive blood pressure control (target SBP \u003c 140 mmHg)", "shape": "dot", "size": 18, "title": "Type: intervention\nName: intensive blood pressure control (target SBP \u003c 140 mmHg)"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:rapid anticoagulation reversal", "label": "rapid anticoagulation reversal", "shape": "dot", "size": 18, "title": "Type: intervention\nName: rapid anticoagulation reversal"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:intracranial pressure monitoring", "label": "intracranial pressure monitoring", "shape": "dot", "size": 18, "title": "Type: intervention\nName: intracranial pressure monitoring"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:neurosurgical hematoma evacuation evaluation", "label": "neurosurgical hematoma evacuation evaluation", "shape": "dot", "size": 18, "title": "Type: intervention\nName: neurosurgical hematoma evacuation evaluation"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:subacute multidisciplinary neurorehabilitation", "label": "subacute multidisciplinary neurorehabilitation", "shape": "dot", "size": 18, "title": "Type: intervention\nName: subacute multidisciplinary neurorehabilitation"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:intravenous thrombolysis (alteplase or tenecteplase)", "label": "intravenous thrombolysis (alteplase or tenecteplase)", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: intravenous thrombolysis (alteplase or tenecteplase)"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:therapeutic anticoagulation", "label": "therapeutic anticoagulation", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: therapeutic anticoagulation"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:antiplatelet administration in acute phase", "label": "antiplatelet administration in acute phase", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: antiplatelet administration in acute phase"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:lumbar puncture prior to neuroimaging", "label": "lumbar puncture prior to neuroimaging", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: lumbar puncture prior to neuroimaging"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:excessive neck flexion impairing cerebral venous drainage", "label": "excessive neck flexion impairing cerebral venous drainage", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: excessive neck flexion impairing cerebral venous drainage"}, {"font": {"color": "#0f172a"}, "group": "disease", "id": "S14.1", "label": "Cervical Spinal Cord Injury", "shape": "dot", "size": 28, "title": "Type: disease\nName: Cervical Spinal Cord Injury\nICD-10: S14.1\nSNOMED CT: 405759003"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:tetraplegia or tetraparesis", "label": "tetraplegia or tetraparesis", "shape": "dot", "size": 16, "title": "Type: symptom\nName: tetraplegia or tetraparesis"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:sensory level deficit", "label": "sensory level deficit", "shape": "dot", "size": 16, "title": "Type: symptom\nName: sensory level deficit"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:diaphragmatic weakness", "label": "diaphragmatic weakness", "shape": "dot", "size": 16, "title": "Type: symptom\nName: diaphragmatic weakness"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:neurogenic shock", "label": "neurogenic shock", "shape": "dot", "size": 16, "title": "Type: symptom\nName: neurogenic shock"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:bradycardia", "label": "bradycardia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: bradycardia"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:hypotension", "label": "hypotension", "shape": "dot", "size": 16, "title": "Type: symptom\nName: hypotension"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:autonomic dysreflexia", "label": "autonomic dysreflexia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: autonomic dysreflexia"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:neurogenic bladder", "label": "neurogenic bladder", "shape": "dot", "size": 16, "title": "Type: symptom\nName: neurogenic bladder"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:cervical spine immobilization", "label": "cervical spine immobilization", "shape": "dot", "size": 18, "title": "Type: intervention\nName: cervical spine immobilization"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:mean arterial pressure maintenance (85-90 mmhg)", "label": "mean arterial pressure maintenance (85-90 mmHg)", "shape": "dot", "size": 18, "title": "Type: intervention\nName: mean arterial pressure maintenance (85-90 mmHg)"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:serial forced vital capacity and respiratory mechanics monitoring", "label": "serial forced vital capacity and respiratory mechanics monitoring", "shape": "dot", "size": 18, "title": "Type: intervention\nName: serial forced vital capacity and respiratory mechanics monitoring"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:early surgical decompression evaluation", "label": "early surgical decompression evaluation", "shape": "dot", "size": 18, "title": "Type: intervention\nName: early surgical decompression evaluation"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:venous thromboembolism prophylaxis", "label": "venous thromboembolism prophylaxis", "shape": "dot", "size": 18, "title": "Type: intervention\nName: venous thromboembolism prophylaxis"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:multidisciplinary spinal cord neurorehabilitation", "label": "multidisciplinary spinal cord neurorehabilitation", "shape": "dot", "size": 18, "title": "Type: intervention\nName: multidisciplinary spinal cord neurorehabilitation"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:inspiratory muscle and diaphragmatic training", "label": "inspiratory muscle and diaphragmatic training", "shape": "dot", "size": 18, "title": "Type: intervention\nName: inspiratory muscle and diaphragmatic training"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:unprotected cervical spine manipulation", "label": "unprotected cervical spine manipulation", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: unprotected cervical spine manipulation"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:succinylcholine administration beyond 48 hours post-injury", "label": "succinylcholine administration beyond 48 hours post-injury", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: succinylcholine administration beyond 48 hours post-injury"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:routine high-dose methylprednisolone outside evidence window", "label": "routine high-dose methylprednisolone outside evidence window", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: routine high-dose methylprednisolone outside evidence window"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:prolonged supine positioning without pressure injury prophylaxis", "label": "prolonged supine positioning without pressure injury prophylaxis", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: prolonged supine positioning without pressure injury prophylaxis"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:unmonitored bladder distension triggering autonomic dysreflexia", "label": "unmonitored bladder distension triggering autonomic dysreflexia", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: unmonitored bladder distension triggering autonomic dysreflexia"}, {"font": {"color": "#0f172a"}, "group": "disease", "id": "J44.1", "label": "COPD Exacerbation", "shape": "dot", "size": 28, "title": "Type: disease\nName: COPD Exacerbation\nICD-10: J44.1\nSNOMED CT: 195951007"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:worsening dyspnea", "label": "worsening dyspnea", "shape": "dot", "size": 16, "title": "Type: symptom\nName: worsening dyspnea"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:increased sputum volume", "label": "increased sputum volume", "shape": "dot", "size": 16, "title": "Type: symptom\nName: increased sputum volume"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:increased sputum purulence", "label": "increased sputum purulence", "shape": "dot", "size": 16, "title": "Type: symptom\nName: increased sputum purulence"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:wheezing", "label": "wheezing", "shape": "dot", "size": 16, "title": "Type: symptom\nName: wheezing"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:hypercapnia", "label": "hypercapnia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: hypercapnia"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:accessory respiratory muscle use", "label": "accessory respiratory muscle use", "shape": "dot", "size": 16, "title": "Type: symptom\nName: accessory respiratory muscle use"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:hypoxemia", "label": "hypoxemia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: hypoxemia"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:controlled oxygen therapy (target spo2 88-92%)", "label": "controlled oxygen therapy (target SpO2 88-92%)", "shape": "dot", "size": 18, "title": "Type: intervention\nName: controlled oxygen therapy (target SpO2 88-92%)"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:short-acting bronchodilators (albuterol and ipratropium)", "label": "short-acting bronchodilators (albuterol and ipratropium)", "shape": "dot", "size": 18, "title": "Type: intervention\nName: short-acting bronchodilators (albuterol and ipratropium)"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:systemic corticosteroids", "label": "systemic corticosteroids", "shape": "dot", "size": 18, "title": "Type: intervention\nName: systemic corticosteroids"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:non-invasive positive pressure ventilation (bipap) for hypercapnic acidosis", "label": "non-invasive positive pressure ventilation (BiPAP) for hypercapnic acidosis", "shape": "dot", "size": 18, "title": "Type: intervention\nName: non-invasive positive pressure ventilation (BiPAP) for hypercapnic acidosis"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:antibiotic therapy when bacterial infection suspected", "label": "antibiotic therapy when bacterial infection suspected", "shape": "dot", "size": 18, "title": "Type: intervention\nName: antibiotic therapy when bacterial infection suspected"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:pulmonary rehabilitation after acute stabilization", "label": "pulmonary rehabilitation after acute stabilization", "shape": "dot", "size": 18, "title": "Type: intervention\nName: pulmonary rehabilitation after acute stabilization"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:uncontrolled high-flow oxygen targeting spo2 \u003e 96%", "label": "uncontrolled high-flow oxygen targeting SpO2 \u003e 96%", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: uncontrolled high-flow oxygen targeting SpO2 \u003e 96%"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:non-selective beta-blockers", "label": "non-selective beta-blockers", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: non-selective beta-blockers"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:respiratory depressants (opioids or sedatives) without airway protection", "label": "respiratory depressants (opioids or sedatives) without airway protection", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: respiratory depressants (opioids or sedatives) without airway protection"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:delayed non-invasive ventilation in acute hypercapnic acidosis (ph \u003c 7.35)", "label": "delayed non-invasive ventilation in acute hypercapnic acidosis (pH \u003c 7.35)", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: delayed non-invasive ventilation in acute hypercapnic acidosis (pH \u003c 7.35)"}, {"font": {"color": "#0f172a"}, "group": "disease", "id": "G61.0", "label": "Guillain-Barre Syndrome", "shape": "dot", "size": 28, "title": "Type: disease\nName: Guillain-Barre Syndrome\nICD-10: G61.0\nSNOMED CT: 40956001"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:symmetric ascending flaccid weakness", "label": "symmetric ascending flaccid weakness", "shape": "dot", "size": 16, "title": "Type: symptom\nName: symmetric ascending flaccid weakness"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:areflexia or hyporeflexia", "label": "areflexia or hyporeflexia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: areflexia or hyporeflexia"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:distal paresthesias", "label": "distal paresthesias", "shape": "dot", "size": 16, "title": "Type: symptom\nName: distal paresthesias"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:cranial nerve palsies", "label": "cranial nerve palsies", "shape": "dot", "size": 16, "title": "Type: symptom\nName: cranial nerve palsies"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:dysautonomia", "label": "dysautonomia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: dysautonomia"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:progressive respiratory muscle weakness", "label": "progressive respiratory muscle weakness", "shape": "dot", "size": 16, "title": "Type: symptom\nName: progressive respiratory muscle weakness"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:bulbar dysfunction", "label": "bulbar dysfunction", "shape": "dot", "size": 16, "title": "Type: symptom\nName: bulbar dysfunction"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:intravenous immunoglobulin (ivig)", "label": "intravenous immunoglobulin (IVIG)", "shape": "dot", "size": 18, "title": "Type: intervention\nName: intravenous immunoglobulin (IVIG)"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:therapeutic plasma exchange (plasmapheresis)", "label": "therapeutic plasma exchange (plasmapheresis)", "shape": "dot", "size": 18, "title": "Type: intervention\nName: therapeutic plasma exchange (plasmapheresis)"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:serial forced vital capacity and negative inspiratory force monitoring", "label": "serial forced vital capacity and negative inspiratory force monitoring", "shape": "dot", "size": 18, "title": "Type: intervention\nName: serial forced vital capacity and negative inspiratory force monitoring"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:elective endotracheal intubation if fvc \u003c 20 ml/kg", "label": "elective endotracheal intubation if FVC \u003c 20 mL/kg", "shape": "dot", "size": 18, "title": "Type: intervention\nName: elective endotracheal intubation if FVC \u003c 20 mL/kg"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:progressive neurorehabilitation and gait retraining", "label": "progressive neurorehabilitation and gait retraining", "shape": "dot", "size": 18, "title": "Type: intervention\nName: progressive neurorehabilitation and gait retraining"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:oral or intravenous corticosteroids as monotherapy", "label": "oral or intravenous corticosteroids as monotherapy", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: oral or intravenous corticosteroids as monotherapy"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:succinylcholine during intubation due to hyperkalemia risk", "label": "succinylcholine during intubation due to hyperkalemia risk", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: succinylcholine during intubation due to hyperkalemia risk"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:premature discharge prior to respiratory plateau verification", "label": "premature discharge prior to respiratory plateau verification", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: premature discharge prior to respiratory plateau verification"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:high-intensity fatiguing resistance exercise in acute demyelinating phase", "label": "high-intensity fatiguing resistance exercise in acute demyelinating phase", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: high-intensity fatiguing resistance exercise in acute demyelinating phase"}, {"font": {"color": "#0f172a"}, "group": "disease", "id": "J18.9", "label": "Community-Acquired Pneumonia", "shape": "dot", "size": 28, "title": "Type: disease\nName: Community-Acquired Pneumonia\nICD-10: J18.9\nSNOMED CT: 385093006"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:productive cough", "label": "productive cough", "shape": "dot", "size": 16, "title": "Type: symptom\nName: productive cough"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:fever or hypothermia", "label": "fever or hypothermia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: fever or hypothermia"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:dyspnea", "label": "dyspnea", "shape": "dot", "size": 16, "title": "Type: symptom\nName: dyspnea"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:pleuritic chest pain", "label": "pleuritic chest pain", "shape": "dot", "size": 16, "title": "Type: symptom\nName: pleuritic chest pain"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:tachypnea", "label": "tachypnea", "shape": "dot", "size": 16, "title": "Type: symptom\nName: tachypnea"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:focal crackles or bronchial breath sounds", "label": "focal crackles or bronchial breath sounds", "shape": "dot", "size": 16, "title": "Type: symptom\nName: focal crackles or bronchial breath sounds"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:empiric guideline-directed antibiotic therapy", "label": "empiric guideline-directed antibiotic therapy", "shape": "dot", "size": 18, "title": "Type: intervention\nName: empiric guideline-directed antibiotic therapy"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:supplemental oxygen therapy (target spo2 \u003e= 92%)", "label": "supplemental oxygen therapy (target SpO2 \u003e= 92%)", "shape": "dot", "size": 18, "title": "Type: intervention\nName: supplemental oxygen therapy (target SpO2 \u003e= 92%)"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:chest radiography", "label": "chest radiography", "shape": "dot", "size": 18, "title": "Type: intervention\nName: chest radiography"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:blood and sputum cultures in severe presentations", "label": "blood and sputum cultures in severe presentations", "shape": "dot", "size": 18, "title": "Type: intervention\nName: blood and sputum cultures in severe presentations"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:intravenous fluid resuscitation as indicated", "label": "intravenous fluid resuscitation as indicated", "shape": "dot", "size": 18, "title": "Type: intervention\nName: intravenous fluid resuscitation as indicated"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:airway clearance and respiratory physiotherapy", "label": "airway clearance and respiratory physiotherapy", "shape": "dot", "size": 18, "title": "Type: intervention\nName: airway clearance and respiratory physiotherapy"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:delayed antibiotic administration in septic patients", "label": "delayed antibiotic administration in septic patients", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: delayed antibiotic administration in septic patients"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:routine systemic corticosteroids in non-severe pneumonia without indication", "label": "routine systemic corticosteroids in non-severe pneumonia without indication", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: routine systemic corticosteroids in non-severe pneumonia without indication"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:aggressive chest percussion with severe hemoptysis or coagulopathy", "label": "aggressive chest percussion with severe hemoptysis or coagulopathy", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: aggressive chest percussion with severe hemoptysis or coagulopathy"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:antitussive cough suppressants impairing mucociliary clearance", "label": "antitussive cough suppressants impairing mucociliary clearance", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: antitussive cough suppressants impairing mucociliary clearance"}, {"font": {"color": "#0f172a"}, "group": "disease", "id": "G70.0", "label": "Myasthenia Gravis", "shape": "dot", "size": 28, "title": "Type: disease\nName: Myasthenia Gravis\nICD-10: G70.0\nSNOMED CT: 91637004"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:fluctuating fatigable muscle weakness", "label": "fluctuating fatigable muscle weakness", "shape": "dot", "size": 16, "title": "Type: symptom\nName: fluctuating fatigable muscle weakness"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:ptosis", "label": "ptosis", "shape": "dot", "size": 16, "title": "Type: symptom\nName: ptosis"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:diplopia", "label": "diplopia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: diplopia"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:neck flexor weakness", "label": "neck flexor weakness", "shape": "dot", "size": 16, "title": "Type: symptom\nName: neck flexor weakness"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:neuromuscular respiratory failure", "label": "neuromuscular respiratory failure", "shape": "dot", "size": 16, "title": "Type: symptom\nName: neuromuscular respiratory failure"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:intravenous immunoglobulin (ivig) or plasmapheresis in myasthenic crisis", "label": "intravenous immunoglobulin (IVIG) or plasmapheresis in myasthenic crisis", "shape": "dot", "size": 18, "title": "Type: intervention\nName: intravenous immunoglobulin (IVIG) or plasmapheresis in myasthenic crisis"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:early airway protection for impending neuromuscular respiratory failure", "label": "early airway protection for impending neuromuscular respiratory failure", "shape": "dot", "size": 18, "title": "Type: intervention\nName: early airway protection for impending neuromuscular respiratory failure"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:pyridostigmine therapy (withheld during mechanical ventilation crisis)", "label": "pyridostigmine therapy (withheld during mechanical ventilation crisis)", "shape": "dot", "size": 18, "title": "Type: intervention\nName: pyridostigmine therapy (withheld during mechanical ventilation crisis)"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:immunosuppressive therapy optimization", "label": "immunosuppressive therapy optimization", "shape": "dot", "size": 18, "title": "Type: intervention\nName: immunosuppressive therapy optimization"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:energy-conservation neurorehabilitation", "label": "energy-conservation neurorehabilitation", "shape": "dot", "size": 18, "title": "Type: intervention\nName: energy-conservation neurorehabilitation"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:aminoglycoside antibiotics", "label": "aminoglycoside antibiotics", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: aminoglycoside antibiotics"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:fluoroquinolone antibiotics", "label": "fluoroquinolone antibiotics", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: fluoroquinolone antibiotics"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:magnesium sulfate infusion", "label": "magnesium sulfate infusion", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: magnesium sulfate infusion"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:beta-blockers", "label": "beta-blockers", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: beta-blockers"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:high-dose corticosteroid initiation without inpatient respiratory monitoring", "label": "high-dose corticosteroid initiation without inpatient respiratory monitoring", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: high-dose corticosteroid initiation without inpatient respiratory monitoring"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:standard-dose non-depolarizing neuromuscular blocking agents", "label": "standard-dose non-depolarizing neuromuscular blocking agents", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: standard-dose non-depolarizing neuromuscular blocking agents"}, {"font": {"color": "#0f172a"}, "group": "disease", "id": "J80", "label": "Acute Respiratory Distress Syndrome", "shape": "dot", "size": 28, "title": "Type: disease\nName: Acute Respiratory Distress Syndrome\nICD-10: J80\nSNOMED CT: 67782005"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:severe refractory hypoxemia", "label": "severe refractory hypoxemia", "shape": "dot", "size": 16, "title": "Type: symptom\nName: severe refractory hypoxemia"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:bilateral pulmonary infiltrates", "label": "bilateral pulmonary infiltrates", "shape": "dot", "size": 16, "title": "Type: symptom\nName: bilateral pulmonary infiltrates"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:severe dyspnea", "label": "severe dyspnea", "shape": "dot", "size": 16, "title": "Type: symptom\nName: severe dyspnea"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:reduced lung compliance", "label": "reduced lung compliance", "shape": "dot", "size": 16, "title": "Type: symptom\nName: reduced lung compliance"}, {"font": {"color": "#0f172a"}, "group": "symptom", "id": "symptom:diffuse bilateral crackles", "label": "diffuse bilateral crackles", "shape": "dot", "size": 16, "title": "Type: symptom\nName: diffuse bilateral crackles"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:lung-protective mechanical ventilation (tidal volume 4-6 ml/kg pbw)", "label": "lung-protective mechanical ventilation (tidal volume 4-6 mL/kg PBW)", "shape": "dot", "size": 18, "title": "Type: intervention\nName: lung-protective mechanical ventilation (tidal volume 4-6 mL/kg PBW)"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:peep titration maintaining plateau pressure \u003c= 30 cmh2o", "label": "PEEP titration maintaining plateau pressure \u003c= 30 cmH2O", "shape": "dot", "size": 18, "title": "Type: intervention\nName: PEEP titration maintaining plateau pressure \u003c= 30 cmH2O"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:prone positioning for severe ards (pao2/fio2 \u003c 150)", "label": "prone positioning for severe ARDS (PaO2/FiO2 \u003c 150)", "shape": "dot", "size": 18, "title": "Type: intervention\nName: prone positioning for severe ARDS (PaO2/FiO2 \u003c 150)"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:conservative fluid management after shock resolution", "label": "conservative fluid management after shock resolution", "shape": "dot", "size": 18, "title": "Type: intervention\nName: conservative fluid management after shock resolution"}, {"font": {"color": "#0f172a"}, "group": "intervention", "id": "intervention:early icu mobilization and post-icu cardiopulmonary neurorehabilitation", "label": "early ICU mobilization and post-ICU cardiopulmonary neurorehabilitation", "shape": "dot", "size": 18, "title": "Type: intervention\nName: early ICU mobilization and post-ICU cardiopulmonary neurorehabilitation"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:high tidal volume ventilation (\u003e 8 ml/kg pbw)", "label": "high tidal volume ventilation (\u003e 8 mL/kg PBW)", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: high tidal volume ventilation (\u003e 8 mL/kg PBW)"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:excessive positive fluid balance without hemodynamic indication", "label": "excessive positive fluid balance without hemodynamic indication", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: excessive positive fluid balance without hemodynamic indication"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:routine high-frequency oscillatory ventilation", "label": "routine high-frequency oscillatory ventilation", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: routine high-frequency oscillatory ventilation"}, {"font": {"color": "#0f172a"}, "group": "contraindication", "id": "contraindication:prolonged deep sedation preventing spontaneous awakening trials when stable", "label": "prolonged deep sedation preventing spontaneous awakening trials when stable", "shape": "dot", "size": 18, "title": "Type: contraindication\nName: prolonged deep sedation preventing spontaneous awakening trials when stable"}, {"font": {"color": "#0f172a"}, "group": "lab_code", "id": "lab_code:59408-5", "label": "SpO2 (59408-5)", "shape": "diamond", "size": 18, "title": "Type: lab_code\nName: Oxygen saturation in Arterial blood by Pulse oximetry\nLOINC: 59408-5\nUnit: %\nReference Range: 95.0 - 100.0\nClinical Note: Monitors arterial oxygenation; target 88-92% in hypercapnic COPD exacerbations."}, {"font": {"color": "#0f172a"}, "group": "lab_code", "id": "lab_code:2744-1", "label": "Arterial pH (2744-1)", "shape": "diamond", "size": 18, "title": "Type: lab_code\nName: pH of Arterial blood\nLOINC: 2744-1\nUnit: pH\nReference Range: 7.35 - 7.45\nClinical Note: Detects acute respiratory acidosis (\u003c 7.35) requiring NIV or intubation."}, {"font": {"color": "#0f172a"}, "group": "lab_code", "id": "lab_code:2019-8", "label": "PaCO2 (2019-8)", "shape": "diamond", "size": 18, "title": "Type: lab_code\nName: Carbon dioxide [Partial pressure] in Arterial blood\nLOINC: 2019-8\nUnit: mmHg\nReference Range: 35.0 - 45.0\nClinical Note: Quantifies alveolar ventilation; elevated in COPD exacerbation and neuromuscular respiratory failure."}, {"font": {"color": "#0f172a"}, "group": "lab_code", "id": "lab_code:6301-6", "label": "INR (6301-6)", "shape": "diamond", "size": 18, "title": "Type: lab_code\nName: INR in Platelet poor plasma by Coagulation assay\nLOINC: 6301-6\nUnit: {INR}\nReference Range: 0.8 - 1.2\nClinical Note: Assesses coagulation status; INR \u003e 1.7 contraindicates IV thrombolysis in acute ischemic stroke."}, {"font": {"color": "#0f172a"}, "group": "lab_code", "id": "lab_code:2823-3", "label": "Serum Potassium (2823-3)", "shape": "diamond", "size": 18, "title": "Type: lab_code\nName: Potassium [Moles/volume] in Serum or Plasma\nLOINC: 2823-3\nUnit: mmol/L\nReference Range: 3.5 - 5.0\nClinical Note: Critical arrhythmia marker; hyperkalemia risk amplified by succinylcholine in SCI and Guillain-Barre syndrome."}, {"font": {"color": "#0f172a"}, "group": "lab_code", "id": "lab_code:2703-7", "label": "PaO2 (2703-7)", "shape": "diamond", "size": 18, "title": "Type: lab_code\nName: Oxygen [Partial pressure] in Arterial blood\nLOINC: 2703-7\nUnit: mmHg\nReference Range: 80.0 - 100.0\nClinical Note: Measures arterial oxygen tension; used with FiO2 to grade ARDS severity."}, {"font": {"color": "#0f172a"}, "group": "lab_code", "id": "lab_code:1960-4", "label": "Arterial HCO3 (1960-4)", "shape": "diamond", "size": 18, "title": "Type: lab_code\nName: Bicarbonate [Moles/volume] in Arterial blood\nLOINC: 1960-4\nUnit: mmol/L\nReference Range: 22.0 - 26.0\nClinical Note: Distinguishes acute versus chronic renal compensation in hypercapnic respiratory failure."}, {"font": {"color": "#0f172a"}, "group": "lab_code", "id": "lab_code:2518-9", "label": "Arterial Lactate (2518-9)", "shape": "diamond", "size": 18, "title": "Type: lab_code\nName: Lactate [Moles/volume] in Arterial blood\nLOINC: 2518-9\nUnit: mmol/L\nReference Range: 0.5 - 2.0\nClinical Note: Evaluates tissue hypoperfusion in severe community-acquired pneumonia, sepsis, and neurogenic shock."}, {"font": {"color": "#0f172a"}, "group": "lab_code", "id": "lab_code:2345-7", "label": "Serum Glucose (2345-7)", "shape": "diamond", "size": 18, "title": "Type: lab_code\nName: Glucose [Mass/volume] in Serum or Plasma\nLOINC: 2345-7\nUnit: mg/dL\nReference Range: 70.0 - 100.0\nClinical Note: Rules out hypoglycemia as a stroke mimic prior to thrombolytic therapy."}, {"font": {"color": "#0f172a"}, "group": "lab_code", "id": "lab_code:777-3", "label": "Platelet Count (777-3)", "shape": "diamond", "size": 18, "title": "Type: lab_code\nName: Platelets [#/volume] in Blood by Automated count\nLOINC: 777-3\nUnit: 10*3/uL\nReference Range: 150.0 - 400.0\nClinical Note: Evaluates bleeding risk; platelet count \u003c 100 x 10^3/uL contraindicates IV thrombolysis."}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#d97706", "dashes": false, "from": "I63.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:acute hemiparesis"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I63.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:facial droop"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I63.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:dysarthria"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I63.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:aphasia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I63.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:visual field deficit"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I63.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:ataxia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I63.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:dysphagia"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I63.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:non-contrast head ct"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I63.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:intravenous alteplase within 4.5h window"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I63.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:mechanical thrombectomy evaluation"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I63.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:antiplatelet therapy after hemorrhage exclusion"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I63.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:dysphagia screening prior to oral intake"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I63.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:early neurorehabilitation and physical therapy"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I63.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:permissive hypertension management"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "I63.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:thrombolysis if inr \u003e 1.7"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "I63.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:thrombolysis with active intracranial hemorrhage"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "I63.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:oral intake prior to dysphagia screening"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "I63.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:aggressive blood pressure reduction \u003e 15% in first 24h without thrombolysis"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "I63.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:hypotonic intravenous fluids"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I61.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:sudden severe headache"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I61.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:progressive focal neurological deficit"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I61.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:decreased level of consciousness"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I61.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:nausea and vomiting"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I61.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:severe hypertension"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "I61.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:seizures"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I61.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:urgent non-contrast head ct"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I61.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:intensive blood pressure control (target sbp \u003c 140 mmhg)"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I61.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:rapid anticoagulation reversal"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I61.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:intracranial pressure monitoring"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I61.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:neurosurgical hematoma evacuation evaluation"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "I61.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:subacute multidisciplinary neurorehabilitation"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "I61.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:intravenous thrombolysis (alteplase or tenecteplase)"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "I61.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:therapeutic anticoagulation"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "I61.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:antiplatelet administration in acute phase"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "I61.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:lumbar puncture prior to neuroimaging"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "I61.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:excessive neck flexion impairing cerebral venous drainage"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "S14.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:tetraplegia or tetraparesis"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "S14.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:sensory level deficit"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "S14.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:diaphragmatic weakness"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "S14.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:neurogenic shock"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "S14.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:bradycardia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "S14.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:hypotension"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "S14.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:autonomic dysreflexia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "S14.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:neurogenic bladder"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "S14.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:cervical spine immobilization"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "S14.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:mean arterial pressure maintenance (85-90 mmhg)"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "S14.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:serial forced vital capacity and respiratory mechanics monitoring"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "S14.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:early surgical decompression evaluation"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "S14.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:venous thromboembolism prophylaxis"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "S14.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:multidisciplinary spinal cord neurorehabilitation"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "S14.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:inspiratory muscle and diaphragmatic training"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "S14.1", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:unprotected cervical spine manipulation"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "S14.1", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:succinylcholine administration beyond 48 hours post-injury"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "S14.1", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:routine high-dose methylprednisolone outside evidence window"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "S14.1", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:prolonged supine positioning without pressure injury prophylaxis"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "S14.1", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:unmonitored bladder distension triggering autonomic dysreflexia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J44.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:worsening dyspnea"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J44.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:increased sputum volume"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J44.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:increased sputum purulence"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J44.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:wheezing"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J44.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:hypercapnia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J44.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:accessory respiratory muscle use"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J44.1", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:hypoxemia"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J44.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:controlled oxygen therapy (target spo2 88-92%)"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J44.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:short-acting bronchodilators (albuterol and ipratropium)"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J44.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:systemic corticosteroids"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J44.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:non-invasive positive pressure ventilation (bipap) for hypercapnic acidosis"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J44.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:antibiotic therapy when bacterial infection suspected"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J44.1", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:pulmonary rehabilitation after acute stabilization"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J44.1", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:uncontrolled high-flow oxygen targeting spo2 \u003e 96%"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J44.1", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:non-selective beta-blockers"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J44.1", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:respiratory depressants (opioids or sedatives) without airway protection"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J44.1", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:delayed non-invasive ventilation in acute hypercapnic acidosis (ph \u003c 7.35)"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G61.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:symmetric ascending flaccid weakness"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G61.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:areflexia or hyporeflexia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G61.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:distal paresthesias"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G61.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:cranial nerve palsies"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G61.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:dysautonomia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G61.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:progressive respiratory muscle weakness"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G61.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:bulbar dysfunction"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G61.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:intravenous immunoglobulin (ivig)"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G61.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:therapeutic plasma exchange (plasmapheresis)"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G61.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:serial forced vital capacity and negative inspiratory force monitoring"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G61.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:elective endotracheal intubation if fvc \u003c 20 ml/kg"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G61.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:venous thromboembolism prophylaxis"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G61.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:progressive neurorehabilitation and gait retraining"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "G61.0", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:oral or intravenous corticosteroids as monotherapy"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "G61.0", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:succinylcholine during intubation due to hyperkalemia risk"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "G61.0", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:premature discharge prior to respiratory plateau verification"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "G61.0", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:high-intensity fatiguing resistance exercise in acute demyelinating phase"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J18.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:productive cough"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J18.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:fever or hypothermia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J18.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:dyspnea"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J18.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:pleuritic chest pain"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J18.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:tachypnea"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J18.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:hypoxemia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J18.9", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:focal crackles or bronchial breath sounds"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J18.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:empiric guideline-directed antibiotic therapy"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J18.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:supplemental oxygen therapy (target spo2 \u003e= 92%)"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J18.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:chest radiography"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J18.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:blood and sputum cultures in severe presentations"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J18.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:intravenous fluid resuscitation as indicated"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J18.9", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:airway clearance and respiratory physiotherapy"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J18.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:delayed antibiotic administration in septic patients"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J18.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:routine systemic corticosteroids in non-severe pneumonia without indication"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J18.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:aggressive chest percussion with severe hemoptysis or coagulopathy"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J18.9", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:antitussive cough suppressants impairing mucociliary clearance"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G70.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:fluctuating fatigable muscle weakness"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G70.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:ptosis"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G70.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:diplopia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G70.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:dysarthria"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G70.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:dysphagia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G70.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:neck flexor weakness"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "G70.0", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:neuromuscular respiratory failure"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G70.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:intravenous immunoglobulin (ivig) or plasmapheresis in myasthenic crisis"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G70.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:serial forced vital capacity and negative inspiratory force monitoring"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G70.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:early airway protection for impending neuromuscular respiratory failure"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G70.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:pyridostigmine therapy (withheld during mechanical ventilation crisis)"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G70.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:immunosuppressive therapy optimization"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "G70.0", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:energy-conservation neurorehabilitation"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "G70.0", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:aminoglycoside antibiotics"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "G70.0", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:fluoroquinolone antibiotics"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "G70.0", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:magnesium sulfate infusion"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "G70.0", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:beta-blockers"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "G70.0", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:high-dose corticosteroid initiation without inpatient respiratory monitoring"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "G70.0", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:standard-dose non-depolarizing neuromuscular blocking agents"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J80", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:severe refractory hypoxemia"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J80", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:bilateral pulmonary infiltrates"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J80", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:tachypnea"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J80", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:severe dyspnea"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J80", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:reduced lung compliance"}, {"arrows": "to", "color": "#d97706", "dashes": false, "from": "J80", "label": "HAS_SYMPTOM", "title": "HAS_SYMPTOM", "to": "symptom:diffuse bilateral crackles"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J80", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:lung-protective mechanical ventilation (tidal volume 4-6 ml/kg pbw)"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J80", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:peep titration maintaining plateau pressure \u003c= 30 cmh2o"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J80", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:prone positioning for severe ards (pao2/fio2 \u003c 150)"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J80", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:conservative fluid management after shock resolution"}, {"arrows": "to", "color": "#059669", "dashes": false, "from": "J80", "label": "TREATED_BY", "title": "TREATED_BY", "to": "intervention:early icu mobilization and post-icu cardiopulmonary neurorehabilitation"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J80", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:high tidal volume ventilation (\u003e 8 ml/kg pbw)"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J80", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:excessive positive fluid balance without hemodynamic indication"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J80", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:routine high-frequency oscillatory ventilation"}, {"arrows": "to", "color": "#dc2626", "dashes": true, "from": "J80", "label": "CONTRAINDICATED_WITH", "title": "CONTRAINDICATED_WITH", "to": "contraindication:prolonged deep sedation preventing spontaneous awakening trials when stable"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0.1,
+            "centralGravity": 0.35,
+            "damping": 0.12,
+            "gravitationalConstant": -12000,
+            "springConstant": 0.02,
+            "springLength": 180
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
